@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Unit\Domain\Entity;
+
+use App\Domain\Entity\Product;
+use App\Domain\ValueObject\Money;
+use App\Domain\ValueObject\Weight;
+use PHPUnit\Framework\Attributes\Test;
+use App\Tests\Support\BaseTestCase;
+
+final class ProductTest extends BaseTestCase
+{
+    #[Test]
+    public function it_creates_product(): void
+    {
+        $product = new Product(
+            'p1',
+            'Laptop',
+            Money::fromCents(250000),
+            Weight::fromKilograms(2.5),
+            1
+        );
+
+        self::assertSame('p1', $product->id());
+        self::assertSame('Laptop', $product->name());
+        self::assertSame(250000, $product->price()->amountInCents());
+        self::assertSame(2500, $product->weight()->grams());
+        self::assertSame(1, $product->quantity());
+    }
+
+    #[Test]
+    public function it_calculates_total_price(): void
+    {
+        $product = new Product(
+            'p1',
+            'Mouse',
+            Money::fromCents(10000), // 100 PLN
+            Weight::fromGrams(200),
+            3
+        );
+
+        self::assertSame(30000, $product->totalPrice()->amountInCents()); // 300 PLN
+    }
+
+    #[Test]
+    public function it_calculates_total_weight(): void
+    {
+        $product = new Product(
+            'p1',
+            'Mouse',
+            Money::fromCents(10000),
+            Weight::fromGrams(200),
+            3
+        );
+
+        self::assertSame(600, $product->totalWeight()->grams()); // 600g
+    }
+
+    #[Test]
+    public function it_defaults_quantity_to_one(): void
+    {
+        $product = new Product(
+            'p1',
+            'Laptop',
+            Money::fromCents(250000),
+            Weight::fromKilograms(2.5)
+        );
+
+        self::assertSame(1, $product->quantity());
+        self::assertSame(250000, $product->totalPrice()->amountInCents());
+    }
+}
+

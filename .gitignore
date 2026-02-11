@@ -1,0 +1,40 @@
+# Dependencies
+vendor/
+
+# Environment files
+.env
+.env.*
+
+# PHPUnit
+.phpunit.result.cache
+/phpunit.xml.bak
+test-results/
+test-results*
+
+# PHPStan
+/phpstan.neon.local
+
+# Cache/logs
+/var/
+/cache/
+/logs/
+
+# Coverage
+/coverage/
+
+# IDE/editor
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
