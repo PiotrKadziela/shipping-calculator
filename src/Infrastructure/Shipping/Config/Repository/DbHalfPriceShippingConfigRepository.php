@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Shipping\Config\Repository;
 
+use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\Shipping\Config\HalfPriceShippingConfig;
 use App\Domain\Shipping\Config\Repository\HalfPriceShippingConfigRepositoryInterface;
-use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use PDO;
-use RuntimeException;
 
 final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConfigRepositoryInterface
 {
     public function __construct(
-        private readonly PDO $pdo,
-        private readonly CountryRepositoryInterface $countryRepository
-    ) {
-    }
+        private readonly \PDO $pdo,
+        private readonly CountryRepositoryInterface $countryRepository,
+    ) {}
 
     public function load(): HalfPriceShippingConfig
     {
@@ -28,7 +25,7 @@ final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConf
         $countries = [];
         foreach ($countryRates as $row) {
             $country = $this->countryRepository->findByCode($row['country_code']);
-            if ($country !== null) {
+            if (null !== $country) {
                 $countries[] = $country;
             }
         }
@@ -45,8 +42,8 @@ final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConf
 
     /**
      * Load half price shipping config for active shipping config.
-        *
-        * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     private function loadHalfPriceShippingConfig(int $configId): array
     {
@@ -60,7 +57,7 @@ final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConf
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('Half price shipping configuration not found');
+            throw new \RuntimeException('Half price shipping configuration not found');
         }
 
         return $row;
@@ -68,8 +65,8 @@ final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConf
 
     /**
      * Load country-specific rates from rule_scopes.
-        *
-        * @return list<array<string, mixed>>
+     *
+     * @return list<array<string, mixed>>
      */
     private function loadCountryRates(int $halfPriceConfigId): array
     {
@@ -97,7 +94,7 @@ final class DbHalfPriceShippingConfigRepository implements HalfPriceShippingConf
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('No active shipping configuration found');
+            throw new \RuntimeException('No active shipping configuration found');
         }
 
         return (int) $row['id'];

@@ -95,12 +95,21 @@ namespace App\Domain\Shipping\Rule;
 
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\Shipping\ShippingRuleInterface;
+use App\Domain\Shipping\Config\BulkyItemConfig;
+use App\Domain\Shipping\Config\Repository\BulkyItemConfigRepositoryInterface;
+use App\Domain\Entity\Order;
 use App\Domain\ValueObject\Money;
 
 final class BulkyItemSurchargeRule implements ShippingRuleInterface
 {
     private const string NAME = 'bulky_item_surcharge';
-    private const int PRIORITY = 250; // between weight and free shipping
+    private ?BulkyItemConfig $cachedConfig = null;
+
+    public function __construct(
+        private readonly BulkyItemConfigRepositoryInterface $configRepository,
+        private readonly int $priority = 250
+    ) {
+    }
 
     public function getName(): string
     {
@@ -109,7 +118,7 @@ final class BulkyItemSurchargeRule implements ShippingRuleInterface
 
     public function getPriority(): int
     {
-        return self::PRIORITY;
+        return $this->priority;
     }
 
     public function supports(ShippingCalculationContext $context): bool
@@ -120,7 +129,8 @@ final class BulkyItemSurchargeRule implements ShippingRuleInterface
 
     public function apply(ShippingCalculationContext $context): ShippingCalculationContext
     {
-        $surcharge = Money::fromCents(2000); // 20 PLN
+        $config = $this->getConfig();
+        $surcharge = $config->surchargeAmount();
 
         return $context->withAddedCost(
             $surcharge,
@@ -133,10 +143,74 @@ final class BulkyItemSurchargeRule implements ShippingRuleInterface
     {
         // Implementation for checking bulky items
     }
+
+    private function getConfig(): BulkyItemConfig
+    {
+        return $this->cachedConfig ??= $this->configRepository->load();
+    }
 }
 ```
 
-Rules are automatically discovered by Symfony Dependency Injection based on `ShippingRuleInterface`.
+### Step 1b: Register the rule in the pipeline
+
+Rules are created by `ShippingRuleFactory`, so new rules must be added there.
+
+1) Add the rule to the factory:
+
+```php
+// src/Infrastructure/Shipping/ShippingRuleFactory.php
+return [
+    new BaseCountryRateRule(...),
+    new WeightSurchargeRule(...),
+    new BulkyItemSurchargeRule(/* dependencies */),
+    new FreeShippingRule(...),
+    // ...
+];
+```
+
+2) If the rule needs configuration, create a config VO + repository and add DI wiring:
+
+```yaml
+# config/services.yaml
+App\Domain\Shipping\Config\Repository\BulkyItemConfigRepositoryInterface:
+    alias: App\Infrastructure\Shipping\Config\Repository\DbBulkyItemConfigRepository
+```
+
+This project does not autowire rule classes directly; the pipeline is defined in the factory.
+
+### Step 1c: Add configuration in the database
+
+If the rule is configurable, extend the database schema and seeds:
+
+1) Add a table (or columns) in the migration:
+
+```sql
+-- docker/mysql/init/01_migration.sql
+CREATE TABLE bulky_item_configs (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    config_id BIGINT UNSIGNED NOT NULL,
+    priority INT NOT NULL DEFAULT 250,
+    is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    surcharge_amount DECIMAL(12, 2) NOT NULL,
+    currency_code CHAR(3) NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uq_config (config_id),
+    CONSTRAINT fk_bulky_item_config
+        FOREIGN KEY (config_id) REFERENCES shipping_configs(id) ON DELETE CASCADE,
+    CONSTRAINT fk_bulky_item_currency
+        FOREIGN KEY (currency_code) REFERENCES currencies(code)
+) ENGINE=InnoDB;
+```
+
+2) Add seed data:
+
+```sql
+-- docker/mysql/init/03_seed_rules.sql
+INSERT INTO bulky_item_configs (config_id, priority, is_enabled, surcharge_amount, currency_code)
+VALUES (@config_id, 250, TRUE, 20.00, 'PLN');
+```
+
+3) Update `ShippingRuleFactory` priority loading if the rule participates in ordering.
 
 ### Step 2: Add tests
 
@@ -211,7 +285,7 @@ make test-acceptance
 
 ### Test coverage
 
-- **Value Objects**: `Money`, `Weight`, `Country`, `OrderDate`
+- **Value Objects**: `Money`, `Weight`, `OrderDate`
 - **Business rules**: each rule has dedicated unit tests
 - **Acceptance tests**: all business scenarios
 

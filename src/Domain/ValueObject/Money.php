@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
-use InvalidArgumentException;
-
 /**
  * Value Object representing a monetary amount.
  * Stores the value in cents as int to avoid float precision issues.
@@ -14,10 +12,10 @@ final readonly class Money
 {
     private function __construct(
         private int $amountInCents,
-        private string $currency = 'PLN'
+        private string $currency = 'PLN',
     ) {
         if ($amountInCents < 0) {
-            throw new InvalidArgumentException('Amount cannot be negative');
+            throw new \InvalidArgumentException('Amount cannot be negative');
         }
     }
 
@@ -54,6 +52,7 @@ final readonly class Money
     public function add(Money $other): self
     {
         $this->assertSameCurrency($other);
+
         return new self($this->amountInCents + $other->amountInCents, $this->currency);
     }
 
@@ -77,24 +76,27 @@ final readonly class Money
 
     public function isZero(): bool
     {
-        return $this->amountInCents === 0;
+        return 0 === $this->amountInCents;
     }
 
     public function isGreaterThan(Money $other): bool
     {
         $this->assertSameCurrency($other);
+
         return $this->amountInCents > $other->amountInCents;
     }
 
     public function isGreaterThanOrEqual(Money $other): bool
     {
         $this->assertSameCurrency($other);
+
         return $this->amountInCents >= $other->amountInCents;
     }
 
     public function isLessThan(Money $other): bool
     {
         $this->assertSameCurrency($other);
+
         return $this->amountInCents < $other->amountInCents;
     }
 
@@ -117,10 +119,7 @@ final readonly class Money
     private function assertSameCurrency(Money $other): void
     {
         if ($this->currency !== $other->currency) {
-            throw new InvalidArgumentException(
-                sprintf('Cannot operate on different currencies: %s and %s', $this->currency, $other->currency)
-            );
+            throw new \InvalidArgumentException(sprintf('Cannot operate on different currencies: %s and %s', $this->currency, $other->currency));
         }
     }
 }
-

@@ -63,5 +63,3 @@ final class ShippingCalculationEventSubscriber implements EventSubscriberInterfa
         $this->log = [];
     }
 }
-
-

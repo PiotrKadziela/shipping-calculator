@@ -23,9 +23,8 @@ final class FreeShippingRule implements ShippingRuleInterface
 
     public function __construct(
         private readonly FreeShippingConfigRepositoryInterface $configRepository,
-        private readonly int $priority = 300
-    ) {
-    }
+        private readonly int $priority = 300,
+    ) {}
 
     public function getName(): string
     {

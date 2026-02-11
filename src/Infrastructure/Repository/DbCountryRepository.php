@@ -6,17 +6,13 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Entity\Country;
 use App\Domain\Repository\CountryRepositoryInterface;
-use PDO;
-use RuntimeException;
 
 final class DbCountryRepository implements CountryRepositoryInterface
 {
     /** @var array<string, Country|null> */
     private array $cacheByCode = [];
 
-    public function __construct(private readonly PDO $pdo)
-    {
-    }
+    public function __construct(private readonly \PDO $pdo) {}
 
     public function findByCode(string $code): ?Country
     {
@@ -32,8 +28,9 @@ final class DbCountryRepository implements CountryRepositoryInterface
         $stmt->execute(['code' => $code]);
         $row = $stmt->fetch();
 
-        if ($row === false) {
+        if (false === $row) {
             $this->cacheByCode[$code] = null;
+
             return null;
         }
 
@@ -52,8 +49,8 @@ final class DbCountryRepository implements CountryRepositoryInterface
     public function findAllActive(): array
     {
         $stmt = $this->pdo->query('SELECT id, code, name, active FROM countries WHERE active = 1 ORDER BY name');
-        if ($stmt === false) {
-            throw new RuntimeException('Failed to load active countries');
+        if (false === $stmt) {
+            throw new \RuntimeException('Failed to load active countries');
         }
 
         $countries = [];

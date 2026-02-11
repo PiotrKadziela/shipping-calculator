@@ -27,9 +27,8 @@ final class InMemoryHalfPriceShippingConfigRepository implements HalfPriceShippi
     public function __construct(
         private Money $threshold,
         private int $discountPercent,
-        private array $countries
-    ) {
-    }
+        private array $countries,
+    ) {}
 
     public function load(): HalfPriceShippingConfig
     {

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\ValueObject;
 
 use App\Domain\ValueObject\OrderDate;
-use DateTimeImmutable;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -14,16 +12,16 @@ use PHPUnit\Framework\TestCase;
 final class OrderDateTest extends TestCase
 {
     #[Test]
-    public function it_creates_from_datetime(): void
+    public function itCreatesFromDatetime(): void
     {
-        $dateTime = new DateTimeImmutable('2024-01-15');
+        $dateTime = new \DateTimeImmutable('2024-01-15');
         $orderDate = OrderDate::fromDateTime($dateTime);
 
         self::assertSame('2024-01-15', $orderDate->format());
     }
 
     #[Test]
-    public function it_creates_from_string(): void
+    public function itCreatesFromString(): void
     {
         $orderDate = OrderDate::fromString('2024-01-15');
 
@@ -31,7 +29,7 @@ final class OrderDateTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_from_string_with_time(): void
+    public function itCreatesFromStringWithTime(): void
     {
         $orderDate = OrderDate::fromString('2024-01-15 14:30:00');
 
@@ -39,16 +37,16 @@ final class OrderDateTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_on_invalid_date_format(): void
+    public function itThrowsOnInvalidDateFormat(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid date format');
 
         OrderDate::fromString('15-01-2024');
     }
 
     #[Test]
-    public function it_creates_now(): void
+    public function itCreatesNow(): void
     {
         $orderDate = OrderDate::now();
 
@@ -57,7 +55,7 @@ final class OrderDateTest extends TestCase
 
     #[Test]
     #[DataProvider('fridayDataProvider')]
-    public function it_checks_if_friday(string $date, bool $expectedIsFriday, string $expectedDayName): void
+    public function itChecksIfFriday(string $date, bool $expectedIsFriday, string $expectedDayName): void
     {
         $orderDate = OrderDate::fromString($date);
 
@@ -77,7 +75,7 @@ final class OrderDateTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_day_of_week(): void
+    public function itReturnsDayOfWeek(): void
     {
         // Monday = 1, Friday = 5, Sunday = 7
         $monday = OrderDate::fromString('2024-01-15');
@@ -88,7 +86,7 @@ final class OrderDateTest extends TestCase
     }
 
     #[Test]
-    public function it_checks_equality(): void
+    public function itChecksEquality(): void
     {
         $a = OrderDate::fromString('2024-01-15');
         $b = OrderDate::fromString('2024-01-15');
@@ -99,11 +97,10 @@ final class OrderDateTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_datetime_immutable(): void
+    public function itReturnsDatetimeImmutable(): void
     {
         $orderDate = OrderDate::fromString('2024-01-15');
 
-        self::assertInstanceOf(DateTimeImmutable::class, $orderDate->toDateTime());
+        self::assertInstanceOf(\DateTimeImmutable::class, $orderDate->toDateTime());
     }
 }
-

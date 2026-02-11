@@ -17,9 +17,8 @@ final readonly class Product
         private string $name,
         private Money $price,
         private Weight $weight,
-        private int $quantity = 1
-    ) {
-    }
+        private int $quantity = 1,
+    ) {}
 
     public function id(): string
     {
@@ -56,4 +55,3 @@ final readonly class Product
         return Weight::fromGrams($this->weight->grams() * $this->quantity);
     }
 }
-

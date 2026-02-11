@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\ValueObject;
 
-use InvalidArgumentException;
-
 /**
  * Value Object representing weight.
  * Stores the value in grams as int to avoid float precision issues.
@@ -15,10 +13,10 @@ final readonly class Weight
     private const int GRAMS_PER_KILOGRAM = 1000;
 
     private function __construct(
-        private int $grams
+        private int $grams,
     ) {
         if ($grams < 0) {
-            throw new InvalidArgumentException('Weight cannot be negative');
+            throw new \InvalidArgumentException('Weight cannot be negative');
         }
     }
 
@@ -65,6 +63,7 @@ final readonly class Weight
         }
 
         $excessGrams = $this->grams - $limit->grams;
+
         return (int) ceil($excessGrams / self::GRAMS_PER_KILOGRAM);
     }
 
@@ -93,6 +92,7 @@ final readonly class Weight
         if ($this->grams >= self::GRAMS_PER_KILOGRAM) {
             return sprintf('%.2f kg', $this->kilograms());
         }
+
         return sprintf('%d g', $this->grams);
     }
 
@@ -101,4 +101,3 @@ final readonly class Weight
         return $this->format();
     }
 }
-

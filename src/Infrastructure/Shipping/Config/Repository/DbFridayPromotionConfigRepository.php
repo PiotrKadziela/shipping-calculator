@@ -6,14 +6,10 @@ namespace App\Infrastructure\Shipping\Config\Repository;
 
 use App\Domain\Shipping\Config\FridayPromotionConfig;
 use App\Domain\Shipping\Config\Repository\FridayPromotionConfigRepositoryInterface;
-use PDO;
-use RuntimeException;
 
 final class DbFridayPromotionConfigRepository implements FridayPromotionConfigRepositoryInterface
 {
-    public function __construct(private readonly PDO $pdo)
-    {
-    }
+    public function __construct(private readonly \PDO $pdo) {}
 
     public function load(): FridayPromotionConfig
     {
@@ -27,8 +23,8 @@ final class DbFridayPromotionConfigRepository implements FridayPromotionConfigRe
 
     /**
      * Load friday promotion config for active shipping config.
-        *
-        * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     private function loadFridayPromotionConfig(int $configId): array
     {
@@ -42,7 +38,7 @@ final class DbFridayPromotionConfigRepository implements FridayPromotionConfigRe
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('Friday promotion configuration not found');
+            throw new \RuntimeException('Friday promotion configuration not found');
         }
 
         return $row;
@@ -57,7 +53,7 @@ final class DbFridayPromotionConfigRepository implements FridayPromotionConfigRe
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('No active shipping configuration found');
+            throw new \RuntimeException('No active shipping configuration found');
         }
 
         return (int) $row['id'];

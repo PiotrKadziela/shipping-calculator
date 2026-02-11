@@ -23,11 +23,6 @@ interface ShippingRuleInterface
 
     /**
      * Rule priority. Lower priority = executed earlier.
-     * Recommended values:
-     * - 100: base rates
-     * - 200: surcharges (weight, bulky)
-     * - 300: value promotions
-     * - 400: time promotions
      */
     public function getPriority(): int;
 
@@ -42,4 +37,3 @@ interface ShippingRuleInterface
      */
     public function apply(ShippingCalculationContext $context): ShippingCalculationContext;
 }
-

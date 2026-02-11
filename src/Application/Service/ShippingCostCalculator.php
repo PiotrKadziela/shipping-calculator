@@ -24,9 +24,8 @@ final readonly class ShippingCostCalculator
      */
     public function __construct(
         private iterable $rules,
-        private ?EventDispatcherInterface $eventDispatcher = null
-    ) {
-    }
+        private ?EventDispatcherInterface $eventDispatcher = null,
+    ) {}
 
     public function calculate(Order $order): ShippingCalculationResult
     {
@@ -58,14 +57,14 @@ final readonly class ShippingCostCalculator
     {
         $rules = iterator_to_array($this->rules);
 
-        usort($rules, function(ShippingRuleInterface $a, ShippingRuleInterface $b): int {
+        usort($rules, function (ShippingRuleInterface $a, ShippingRuleInterface $b): int {
             $priorityComparison = $a->getPriority() <=> $b->getPriority();
-            
+
             // If priorities are equal, sort by rule name for deterministic ordering
-            if ($priorityComparison === 0) {
+            if (0 === $priorityComparison) {
                 return $a->getName() <=> $b->getName();
             }
-            
+
             return $priorityComparison;
         });
 
@@ -74,7 +73,7 @@ final readonly class ShippingCostCalculator
 
     private function dispatchEvents(ShippingCalculationContext $context, ShippingCalculationResult $result): void
     {
-        if ($this->eventDispatcher === null) {
+        if (null === $this->eventDispatcher) {
             return;
         }
 
@@ -92,4 +91,3 @@ final readonly class ShippingCostCalculator
         ));
     }
 }
-

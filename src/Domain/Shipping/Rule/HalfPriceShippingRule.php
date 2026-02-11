@@ -22,9 +22,8 @@ final class HalfPriceShippingRule implements ShippingRuleInterface
 
     public function __construct(
         private readonly HalfPriceShippingConfigRepositoryInterface $configRepository,
-        private readonly int $priority = 305
-    ) {
-    }
+        private readonly int $priority = 305,
+    ) {}
 
     public function getName(): string
     {

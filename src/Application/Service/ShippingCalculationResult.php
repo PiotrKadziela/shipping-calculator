@@ -14,16 +14,15 @@ use App\Domain\ValueObject\Money;
 final readonly class ShippingCalculationResult
 {
     /**
-     * @param string[] $appliedRules
+     * @param string[]               $appliedRules
      * @param DomainEventInterface[] $events
      */
     public function __construct(
         private Order $order,
         private Money $shippingCost,
         private array $appliedRules,
-        private array $events
-    ) {
-    }
+        private array $events,
+    ) {}
 
     public function order(): Order
     {
@@ -56,4 +55,3 @@ final readonly class ShippingCalculationResult
         return $this->shippingCost->isZero();
     }
 }
-

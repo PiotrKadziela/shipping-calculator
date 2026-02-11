@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Shipping;
 
-use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
 use App\Domain\Event\ShippingRuleAppliedEvent;
@@ -12,13 +11,13 @@ use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
-use PHPUnit\Framework\Attributes\Test;
 use App\Tests\Support\BaseTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class ShippingCalculationContextTest extends BaseTestCase
 {
     #[Test]
-    public function it_creates_context_for_order(): void
+    public function itCreatesContextForOrder(): void
     {
         $order = $this->createOrder();
 
@@ -31,7 +30,7 @@ final class ShippingCalculationContextTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_creates_new_context_with_cost(): void
+    public function itCreatesNewContextWithCost(): void
     {
         $order = $this->createOrder();
         $context = ShippingCalculationContext::forOrder($order);
@@ -52,7 +51,7 @@ final class ShippingCalculationContextTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_adds_cost(): void
+    public function itAddsCost(): void
     {
         $order = $this->createOrder();
         $context = ShippingCalculationContext::forOrder($order)
@@ -68,7 +67,7 @@ final class ShippingCalculationContextTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_tracks_free_shipping(): void
+    public function itTracksFreeShipping(): void
     {
         $order = $this->createOrder();
         $contextWithCost = ShippingCalculationContext::forOrder($order)
@@ -80,7 +79,7 @@ final class ShippingCalculationContextTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_checks_applied_rules(): void
+    public function itChecksAppliedRules(): void
     {
         $order = $this->createOrder();
         $context = ShippingCalculationContext::forOrder($order)
@@ -93,7 +92,7 @@ final class ShippingCalculationContextTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_records_events_with_correct_data(): void
+    public function itRecordsEventsWithCorrectData(): void
     {
         $order = $this->createOrder();
         $context = ShippingCalculationContext::forOrder($order)
@@ -129,4 +128,3 @@ final class ShippingCalculationContextTest extends BaseTestCase
         );
     }
 }
-

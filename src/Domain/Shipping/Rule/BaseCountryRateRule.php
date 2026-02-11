@@ -25,9 +25,8 @@ final class BaseCountryRateRule implements ShippingRuleInterface
 
     public function __construct(
         private readonly BaseCountryRateConfigRepositoryInterface $configRepository,
-        private readonly int $priority = 100
-    ) {
-    }
+        private readonly int $priority = 100,
+    ) {}
 
     public function getName(): string
     {
@@ -66,4 +65,3 @@ final class BaseCountryRateRule implements ShippingRuleInterface
         return $this->cachedConfig ??= $this->configRepository->load();
     }
 }
-

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\UI\Console;
 
-use PDO;
-use PDOException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -21,7 +19,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 final class DbRecreateCommand extends Command
 {
     public function __construct(
-        private readonly KernelInterface $kernel
+        private readonly KernelInterface $kernel,
     ) {
         parent::__construct();
     }
@@ -39,7 +37,7 @@ final class DbRecreateCommand extends Command
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'Path to migration/seed SQL files',
-                $this->kernel->getProjectDir().'/docker/mysql/init'
+                $this->kernel->getProjectDir() . '/docker/mysql/init'
             );
     }
 
@@ -56,12 +54,14 @@ final class DbRecreateCommand extends Command
 
         if (!is_dir($path)) {
             $io->error(sprintf('SQL path not found: %s', $path));
+
             return Command::FAILURE;
         }
 
-        $files = glob($path.'/*.sql');
-        if ($files === false || count($files) === 0) {
+        $files = glob($path . '/*.sql');
+        if (false === $files || 0 === count($files)) {
             $io->error(sprintf('No SQL files found in: %s', $path));
+
             return Command::FAILURE;
         }
 
@@ -77,7 +77,7 @@ final class DbRecreateCommand extends Command
 
             foreach ($files as $file) {
                 $sql = trim((string) file_get_contents($file));
-                if ($sql === '') {
+                if ('' === $sql) {
                     continue;
                 }
 
@@ -86,30 +86,32 @@ final class DbRecreateCommand extends Command
             }
 
             $io->success('Database recreated and seeded.');
+
             return Command::SUCCESS;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $io->error($e->getMessage());
+
             return Command::FAILURE;
         }
     }
 
-    private function connect(string $host, string $port, ?string $database, string $user, string $password): PDO
+    private function connect(string $host, string $port, ?string $database, string $user, string $password): \PDO
     {
-        $dsn = $database === null
+        $dsn = null === $database
             ? sprintf('mysql:host=%s;port=%s;charset=utf8mb4', $host, $port)
             : sprintf('mysql:host=%s;port=%s;dbname=%s;charset=utf8mb4', $host, $port, $database);
 
-        return new PDO($dsn, $user, $password, [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
+        return new \PDO($dsn, $user, $password, [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+            \PDO::MYSQL_ATTR_MULTI_STATEMENTS => true,
         ]);
     }
 
     private function getEnv(string $name, string $default): string
     {
         $value = $_SERVER[$name] ?? $_ENV[$name] ?? getenv($name);
-        if ($value === false || $value === '') {
+        if (false === $value || '' === $value) {
             return $default;
         }
 

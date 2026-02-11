@@ -30,9 +30,8 @@ final class InMemoryFreeShippingConfigRepository implements FreeShippingConfigRe
      */
     public function __construct(
         private Money $threshold,
-        private array $countries
-    ) {
-    }
+        private array $countries,
+    ) {}
 
     public function load(): FreeShippingConfig
     {

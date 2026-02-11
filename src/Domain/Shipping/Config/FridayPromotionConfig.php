@@ -14,9 +14,8 @@ final readonly class FridayPromotionConfig
      * @param int $discountPercent Percentage discount on Fridays (typically 50)
      */
     public function __construct(
-        private int $discountPercent
-    ) {
-    }
+        private int $discountPercent,
+    ) {}
 
     public function discountPercent(): int
     {

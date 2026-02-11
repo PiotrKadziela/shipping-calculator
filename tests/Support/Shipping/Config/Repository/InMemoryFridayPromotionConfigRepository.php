@@ -14,9 +14,7 @@ final class InMemoryFridayPromotionConfigRepository implements FridayPromotionCo
         return new self(50);
     }
 
-    public function __construct(private int $discountPercent)
-    {
-    }
+    public function __construct(private int $discountPercent) {}
 
     public function load(): FridayPromotionConfig
     {

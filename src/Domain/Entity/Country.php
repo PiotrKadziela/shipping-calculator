@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Domain\Entity;
 
-use InvalidArgumentException;
-
 /**
  * Country entity (from database).
  */
@@ -15,7 +13,7 @@ final readonly class Country
         private int $id,
         private string $code,
         private string $name,
-        private bool $active
+        private bool $active,
     ) {
         $this->validate();
     }
@@ -57,20 +55,16 @@ final readonly class Country
 
     private function validate(): void
     {
-        if (strlen($this->code) !== 2) {
-            throw new InvalidArgumentException(
-                sprintf('Country code must be exactly 2 characters, got: %s', $this->code)
-            );
+        if (2 !== strlen($this->code)) {
+            throw new \InvalidArgumentException(sprintf('Country code must be exactly 2 characters, got: %s', $this->code));
         }
 
         if (!preg_match('/^[A-Z]{2}$/', $this->code)) {
-            throw new InvalidArgumentException(
-                sprintf('Country code must contain only uppercase letters, got: %s', $this->code)
-            );
+            throw new \InvalidArgumentException(sprintf('Country code must contain only uppercase letters, got: %s', $this->code));
         }
 
-        if (trim($this->name) === '') {
-            throw new InvalidArgumentException('Country name cannot be empty');
+        if ('' === trim($this->name)) {
+            throw new \InvalidArgumentException('Country name cannot be empty');
         }
     }
 }

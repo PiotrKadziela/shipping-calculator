@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Shipping\Config\Repository;
 
+use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\Shipping\Config\BaseCountryRateConfig;
 use App\Domain\Shipping\Config\Repository\BaseCountryRateConfigRepositoryInterface;
-use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use PDO;
-use RuntimeException;
 
 final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRepositoryInterface
 {
     public function __construct(
-        private readonly PDO $pdo,
-        private readonly CountryRepositoryInterface $countryRepository
-    ) {
-    }
+        private readonly \PDO $pdo,
+        private readonly CountryRepositoryInterface $countryRepository,
+    ) {}
 
     public function load(): BaseCountryRateConfig
     {
@@ -28,7 +25,7 @@ final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRe
         $rates = [];
         foreach ($countryRates as $row) {
             $country = $this->countryRepository->findByCode($row['country_code']);
-            if ($country !== null) {
+            if (null !== $country) {
                 $rates[$country->code()] = Money::fromDecimal(
                     (float) $row['amount'],
                     (string) $row['currency_code']
@@ -46,8 +43,8 @@ final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRe
 
     /**
      * Load base rate config for active shipping config.
-        *
-        * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     private function loadBaseRateConfig(int $configId): array
     {
@@ -61,7 +58,7 @@ final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRe
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('Base rate configuration not found');
+            throw new \RuntimeException('Base rate configuration not found');
         }
 
         return $row;
@@ -70,8 +67,8 @@ final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRe
     /**
      * Load country-specific rates from rule_scopes.
      * Uses country-specific amounts if available, otherwise uses default amount.
-        *
-        * @return list<array<string, mixed>>
+     *
+     * @return list<array<string, mixed>>
      */
     private function loadCountryRates(int $baseRateConfigId): array
     {
@@ -101,7 +98,7 @@ final class DbBaseCountryRateConfigRepository implements BaseCountryRateConfigRe
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('No active shipping configuration found');
+            throw new \RuntimeException('No active shipping configuration found');
         }
 
         return (int) $row['id'];

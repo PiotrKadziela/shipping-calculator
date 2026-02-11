@@ -18,7 +18,7 @@ final readonly class ShippingCostCalculatedEvent extends AbstractDomainEvent
         private string $orderId,
         private Money $firstRuleCost,
         private Money $finalCost,
-        private array $appliedRules
+        private array $appliedRules,
     ) {
         parent::__construct();
     }
@@ -46,5 +46,3 @@ final readonly class ShippingCostCalculatedEvent extends AbstractDomainEvent
         return $this->appliedRules;
     }
 }
-
-

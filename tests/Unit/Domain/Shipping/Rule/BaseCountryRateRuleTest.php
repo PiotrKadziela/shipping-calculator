@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Shipping\Rule;
 
+use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
-use App\Domain\Entity\Country;
 use App\Domain\Shipping\Rule\BaseCountryRateRule;
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
+use App\Tests\Support\BaseTestCase;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryBaseCountryRateConfigRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use App\Tests\Support\BaseTestCase;
 
 final class BaseCountryRateRuleTest extends BaseTestCase
 {
@@ -28,14 +28,14 @@ final class BaseCountryRateRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_has_correct_name_and_priority(): void
+    public function itHasCorrectNameAndPriority(): void
     {
         self::assertSame('base_country_rate', $this->rule->getName());
         self::assertSame(100, $this->rule->getPriority());
     }
 
     #[Test]
-    public function it_always_supports(): void
+    public function itAlwaysSupports(): void
     {
         $context = $this->createContext($this->poland());
 
@@ -44,7 +44,7 @@ final class BaseCountryRateRuleTest extends BaseTestCase
 
     #[Test]
     #[DataProvider('countryRatesDataProvider')]
-    public function it_applies_correct_rate_for_country(Country $country, int $expectedCents): void
+    public function itAppliesCorrectRateForCountry(Country $country, int $expectedCents): void
     {
         $context = $this->createContext($country);
 
@@ -56,7 +56,7 @@ final class BaseCountryRateRuleTest extends BaseTestCase
     public static function countryRatesDataProvider(): array
     {
         $repo = new \App\Tests\Support\Repository\InMemoryCountryRepository();
-        
+
         return [
             'Poland - 10 PLN' => [$repo->poland(), 1000],
             'Germany - 20 PLN' => [$repo->germany(), 2000],
@@ -67,7 +67,7 @@ final class BaseCountryRateRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_records_event(): void
+    public function itRecordsEvent(): void
     {
         $context = $this->createContext($this->poland());
 
@@ -91,4 +91,3 @@ final class BaseCountryRateRuleTest extends BaseTestCase
         return ShippingCalculationContext::forOrder($order);
     }
 }
-

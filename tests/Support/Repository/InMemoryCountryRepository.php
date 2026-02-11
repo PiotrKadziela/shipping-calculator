@@ -20,6 +20,7 @@ final class InMemoryCountryRepository implements CountryRepositoryInterface
     public function findByCode(string $code): ?Country
     {
         $code = strtoupper(trim($code));
+
         return $this->countries[$code] ?? null;
     }
 

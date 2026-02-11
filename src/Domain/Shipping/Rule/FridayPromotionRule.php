@@ -24,9 +24,8 @@ final class FridayPromotionRule implements ShippingRuleInterface
 
     public function __construct(
         private readonly FridayPromotionConfigRepositoryInterface $configRepository,
-        private readonly int $priority = 400
-    ) {
-    }
+        private readonly int $priority = 400,
+    ) {}
 
     public function getName(): string
     {
@@ -69,4 +68,3 @@ final class FridayPromotionRule implements ShippingRuleInterface
         return $this->cachedConfig ??= $this->configRepository->load();
     }
 }
-

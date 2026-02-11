@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\UI\Console;
 
 use App\Application\Service\ShippingCostCalculator;
-use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
 use App\Domain\Event\ShippingRuleAppliedEvent;
@@ -28,7 +27,7 @@ final class CalculateShippingCommand extends Command
 {
     public function __construct(
         private readonly ShippingCostCalculator $calculator,
-        private readonly CountryRepositoryInterface $countryRepository
+        private readonly CountryRepositoryInterface $countryRepository,
     ) {
         parent::__construct();
     }
@@ -72,34 +71,34 @@ final class CalculateShippingCommand extends Command
                 []
             )
             ->setHelp(<<<'HELP'
-The <info>%command.name%</info> command calculates shipping cost for an order.
+                The <info>%command.name%</info> command calculates shipping cost for an order.
 
-<info>Examples:</info>
+                <info>Examples:</info>
 
-  Basic usage with explicit values:
-    <info>%command.full_name% --country=PL --weight=3.5 --value=250</info>
+                  Basic usage with explicit values:
+                    <info>%command.full_name% --country=PL --weight=3.5 --value=250</info>
 
-  Order to USA with heavy package:
-    <info>%command.full_name% --country=US --weight=7.2 --value=100</info>
+                  Order to USA with heavy package:
+                    <info>%command.full_name% --country=US --weight=7.2 --value=100</info>
 
-  Free shipping (cart >= 400 PLN):
-    <info>%command.full_name% --country=PL --weight=2 --value=500</info>
+                  Free shipping (cart >= 400 PLN):
+                    <info>%command.full_name% --country=PL --weight=2 --value=500</info>
 
-  Friday promotion (use a Friday date):
-    <info>%command.full_name% --country=DE --weight=3 --value=100 --date=2024-01-19</info>
+                  Friday promotion (use a Friday date):
+                    <info>%command.full_name% --country=DE --weight=3 --value=100 --date=2024-01-19</info>
 
-  With products:
-    <info>%command.full_name% --products="Laptop:2500:2.5:1" --products="Mouse:100:0.2:2" --country=PL --date=2024-01-15</info>
+                  With products:
+                    <info>%command.full_name% --products="Laptop:2500:2.5:1" --products="Mouse:100:0.2:2" --country=PL --date=2024-01-15</info>
 
-<info>Options shortcuts:</info>
-  -c country, -w weight, -a value (amount), -d date, -p products
+                <info>Options shortcuts:</info>
+                  -c country, -w weight, -a value (amount), -d date, -p products
 
-<info>Business Rules:</info>
-  1. Base rates: PL=10PLN, DE=20PLN, US=50PLN, other=39.99PLN
-  2. Weight surcharge: +3PLN per started kg above 5kg
-  3. Value promotion: cart>=400PLN = free shipping (USA: 50% off instead)
-  4. Friday promotion: 50% off (stacks with USA discount)
-HELP);
+                <info>Business Rules:</info>
+                  1. Base rates: PL=10PLN, DE=20PLN, US=50PLN, other=39.99PLN
+                  2. Weight surcharge: +3PLN per started kg above 5kg
+                  3. Value promotion: cart>=400PLN = free shipping (USA: 50% off instead)
+                  4. Friday promotion: 50% off (stacks with USA discount)
+                HELP);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -117,6 +116,7 @@ HELP);
             return Command::SUCCESS;
         } catch (\InvalidArgumentException $e) {
             $io->error($e->getMessage());
+
             return Command::FAILURE;
         }
     }
@@ -130,7 +130,7 @@ HELP);
         $productStrings = $input->getOption('products');
 
         $country = $this->countryRepository->findByCode($countryCode);
-        if ($country === null) {
+        if (null === $country) {
             throw new \InvalidArgumentException(sprintf('Country with code "%s" not found', $countryCode));
         }
 
@@ -138,6 +138,7 @@ HELP);
 
         if (!empty($productStrings)) {
             $products = $this->parseProducts($productStrings);
+
             return Order::create(
                 uniqid('order_'),
                 $products,
@@ -153,7 +154,7 @@ HELP);
                 'Order items',
                 Money::fromDecimal($valuePln),
                 Weight::fromKilograms($weightKg)
-            )
+            ),
         ];
 
         return Order::withExplicitValues(
@@ -168,6 +169,7 @@ HELP);
 
     /**
      * @param string[] $productStrings
+     *
      * @return Product[]
      */
     private function parseProducts(array $productStrings): array
@@ -178,9 +180,7 @@ HELP);
             $parts = explode(':', $productString);
 
             if (count($parts) < 3) {
-                throw new \InvalidArgumentException(
-                    sprintf('Invalid product format: "%s". Expected "name:price:weight[:quantity]"', $productString)
-                );
+                throw new \InvalidArgumentException(sprintf('Invalid product format: "%s". Expected "name:price:weight[:quantity]"', $productString));
             }
 
             $name = $parts[0];
@@ -276,6 +276,3 @@ HELP);
         $io->text(sprintf('Applied rules: %s', implode(' → ', $result->appliedRules())));
     }
 }
-
-
-

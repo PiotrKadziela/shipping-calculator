@@ -14,16 +14,15 @@ use App\Domain\ValueObject\Money;
 final readonly class HalfPriceShippingConfig
 {
     /**
-     * @param Money $threshold Cart value to get half-price shipping
-     * @param int $discountPercent Percentage discount (typically 50 for half-price)
-     * @param Country[] $countries List of countries where half-price applies
+     * @param Money     $threshold       Cart value to get half-price shipping
+     * @param int       $discountPercent Percentage discount (typically 50 for half-price)
+     * @param Country[] $countries       List of countries where half-price applies
      */
     public function __construct(
         private Money $threshold,
         private int $discountPercent,
-        private array $countries
-    ) {
-    }
+        private array $countries,
+    ) {}
 
     public function threshold(): Money
     {

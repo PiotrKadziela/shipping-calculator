@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Domain\Shipping\Rule;
 
-use App\Domain\Shipping\Config\WeightSurchargeConfig;
 use App\Domain\Shipping\Config\Repository\WeightSurchargeConfigRepositoryInterface;
+use App\Domain\Shipping\Config\WeightSurchargeConfig;
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\Shipping\ShippingRuleInterface;
 use App\Domain\ValueObject\Weight;
@@ -26,9 +26,8 @@ final class WeightSurchargeRule implements ShippingRuleInterface
 
     public function __construct(
         private readonly WeightSurchargeConfigRepositoryInterface $configRepository,
-        private readonly int $priority = 200
-    ) {
-    }
+        private readonly int $priority = 200,
+    ) {}
 
     public function getName(): string
     {
@@ -44,6 +43,7 @@ final class WeightSurchargeRule implements ShippingRuleInterface
     {
         $config = $this->getConfig();
         $weightLimit = Weight::fromKilograms($config->limitKg());
+
         return $context->order()->totalWeight()->isGreaterThan($weightLimit);
     }
 
@@ -76,4 +76,3 @@ final class WeightSurchargeRule implements ShippingRuleInterface
         return $this->cachedConfig ??= $this->configRepository->load();
     }
 }
-

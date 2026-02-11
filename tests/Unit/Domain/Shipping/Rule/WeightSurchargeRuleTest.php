@@ -6,16 +6,15 @@ namespace App\Tests\Unit\Domain\Shipping\Rule;
 
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
-use App\Domain\Entity\Country;
 use App\Domain\Shipping\Rule\WeightSurchargeRule;
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
+use App\Tests\Support\BaseTestCase;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryWeightSurchargeConfigRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use App\Tests\Support\BaseTestCase;
 
 final class WeightSurchargeRuleTest extends BaseTestCase
 {
@@ -28,7 +27,7 @@ final class WeightSurchargeRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_has_correct_name_and_priority(): void
+    public function itHasCorrectNameAndPriority(): void
     {
         self::assertSame('weight_surcharge', $this->rule->getName());
         self::assertSame(200, $this->rule->getPriority());
@@ -36,7 +35,7 @@ final class WeightSurchargeRuleTest extends BaseTestCase
 
     #[Test]
     #[DataProvider('supportDataProvider')]
-    public function it_supports_only_when_weight_exceeds_limit(float $weightKg, bool $expectedSupport): void
+    public function itSupportsOnlyWhenWeightExceedsLimit(float $weightKg, bool $expectedSupport): void
     {
         $context = $this->createContext($weightKg);
 
@@ -56,7 +55,7 @@ final class WeightSurchargeRuleTest extends BaseTestCase
 
     #[Test]
     #[DataProvider('surchargeDataProvider')]
-    public function it_calculates_correct_surcharge(float $weightKg, int $expectedSurchargeCents): void
+    public function itCalculatesCorrectSurcharge(float $weightKg, int $expectedSurchargeCents): void
     {
         $context = $this->createContext($weightKg, 1000); // Base cost 10 PLN
 
@@ -86,7 +85,7 @@ final class WeightSurchargeRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_records_event(): void
+    public function itRecordsEvent(): void
     {
         $context = $this->createContext(7.2, 1000);
 
@@ -121,5 +120,3 @@ final class WeightSurchargeRuleTest extends BaseTestCase
         return $context;
     }
 }
-
-

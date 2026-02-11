@@ -13,14 +13,13 @@ use App\Domain\ValueObject\Money;
 final readonly class BaseCountryRateConfig
 {
     /**
-     * @param array<string, Money> $baseRates Country code => Money rate
-     * @param Money $defaultRate Rate for countries not explicitly configured
+     * @param array<string, Money> $baseRates   Country code => Money rate
+     * @param Money                $defaultRate Rate for countries not explicitly configured
      */
     public function __construct(
         private array $baseRates,
-        private Money $defaultRate
-    ) {
-    }
+        private Money $defaultRate,
+    ) {}
 
     /**
      * Get rate for a specific country code.

@@ -13,14 +13,13 @@ use App\Domain\ValueObject\Money;
 final readonly class WeightSurchargeConfig
 {
     /**
-     * @param float $limitKg Weight limit in kilograms (below limit = no charge)
+     * @param float $limitKg        Weight limit in kilograms (below limit = no charge)
      * @param Money $surchargePerKg Surcharge amount per started kilogram above limit
      */
     public function __construct(
         private float $limitKg,
-        private Money $surchargePerKg
-    ) {
-    }
+        private Money $surchargePerKg,
+    ) {}
 
     public function limitKg(): float
     {

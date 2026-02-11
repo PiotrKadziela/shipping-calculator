@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Shipping\Rule;
 
+use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
-use App\Domain\Entity\Country;
 use App\Domain\Shipping\Rule\FridayPromotionRule;
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
+use App\Tests\Support\BaseTestCase;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryFridayPromotionConfigRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use App\Tests\Support\BaseTestCase;
 
 final class FridayPromotionRuleTest extends BaseTestCase
 {
@@ -28,7 +28,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_has_correct_name_and_priority(): void
+    public function itHasCorrectNameAndPriority(): void
     {
         self::assertSame('friday_promotion', $this->rule->getName());
         self::assertSame(400, $this->rule->getPriority());
@@ -36,7 +36,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
 
     #[Test]
     #[DataProvider('supportDataProvider')]
-    public function it_supports_only_on_friday_when_not_free(string $date, int $currentCost, bool $expectedSupport): void
+    public function itSupportsOnlyOnFridayWhenNotFree(string $date, int $currentCost, bool $expectedSupport): void
     {
         $context = $this->createContext($date, $currentCost);
 
@@ -55,7 +55,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_applies_50_percent_discount(): void
+    public function itApplies50PercentDiscount(): void
     {
         $context = $this->createContext('2024-01-19', 2000); // 20 PLN
 
@@ -65,7 +65,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_stacks_with_usa_discount(): void
+    public function itStacksWithUsaDiscount(): void
     {
         // Simulation: USA already has a 50% discount (25 PLN from 50 PLN)
         // Friday promotion adds another 50% = 12.50 PLN
@@ -78,7 +78,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_records_event(): void
+    public function itRecordsEvent(): void
     {
         $context = $this->createContext('2024-01-19', 2000);
 
@@ -92,7 +92,7 @@ final class FridayPromotionRuleTest extends BaseTestCase
     private function createContext(
         string $date,
         int $currentCostCents,
-        ?Country $country = null
+        ?Country $country = null,
     ): ShippingCalculationContext {
         $order = Order::withExplicitValues(
             'order_1',
@@ -116,5 +116,3 @@ final class FridayPromotionRuleTest extends BaseTestCase
         return $context;
     }
 }
-
-

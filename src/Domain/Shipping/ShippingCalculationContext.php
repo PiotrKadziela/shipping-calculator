@@ -18,16 +18,15 @@ final readonly class ShippingCalculationContext
 {
     /**
      * @param DomainEventInterface[] $events
-     * @param string[] $appliedRules
+     * @param string[]               $appliedRules
      */
     private function __construct(
         private Order $order,
         private Money $currentCost,
         private ?Money $firstRuleCost = null,
         private array $events = [],
-        private array $appliedRules = []
-    ) {
-    }
+        private array $appliedRules = [],
+    ) {}
 
     public static function forOrder(Order $order): self
     {
@@ -110,4 +109,3 @@ final readonly class ShippingCalculationContext
         return in_array($ruleName, $this->appliedRules, true);
     }
 }
-

@@ -14,14 +14,13 @@ use App\Domain\ValueObject\Money;
 final readonly class FreeShippingConfig
 {
     /**
-     * @param Money $threshold Cart value to get free shipping
+     * @param Money     $threshold Cart value to get free shipping
      * @param Country[] $countries List of countries where free shipping applies
      */
     public function __construct(
         private Money $threshold,
-        private array $countries
-    ) {
-    }
+        private array $countries,
+    ) {}
 
     public function threshold(): Money
     {

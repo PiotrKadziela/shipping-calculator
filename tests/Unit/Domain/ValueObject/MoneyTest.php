@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\ValueObject;
 
 use App\Domain\ValueObject\Money;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 final class MoneyTest extends TestCase
 {
     #[Test]
-    public function it_creates_from_cents(): void
+    public function itCreatesFromCents(): void
     {
         $money = Money::fromCents(1500);
 
@@ -23,7 +22,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_from_decimal(): void
+    public function itCreatesFromDecimal(): void
     {
         $money = Money::fromDecimal(15.99);
 
@@ -32,7 +31,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_zero(): void
+    public function itCreatesZero(): void
     {
         $money = Money::zero();
 
@@ -41,15 +40,15 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_on_negative_amount(): void
+    public function itThrowsOnNegativeAmount(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         Money::fromCents(-100);
     }
 
     #[Test]
-    public function it_adds_money(): void
+    public function itAddsMoney(): void
     {
         $a = Money::fromCents(1000);
         $b = Money::fromCents(500);
@@ -60,7 +59,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_subtracts_money(): void
+    public function itSubtractsMoney(): void
     {
         $a = Money::fromCents(1000);
         $b = Money::fromCents(300);
@@ -71,7 +70,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_zero_when_subtracting_more_than_available(): void
+    public function itReturnsZeroWhenSubtractingMoreThanAvailable(): void
     {
         $a = Money::fromCents(100);
         $b = Money::fromCents(500);
@@ -82,7 +81,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_multiplies_by_factor(): void
+    public function itMultipliesByFactor(): void
     {
         $money = Money::fromCents(1000);
 
@@ -92,7 +91,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_calculates_percentage(): void
+    public function itCalculatesPercentage(): void
     {
         $money = Money::fromCents(1000);
 
@@ -103,7 +102,7 @@ final class MoneyTest extends TestCase
 
     #[Test]
     #[DataProvider('comparisonDataProvider')]
-    public function it_compares_money(int $a, int $b, bool $isGreater, bool $isGreaterOrEqual, bool $isLess): void
+    public function itComparesMoney(int $a, int $b, bool $isGreater, bool $isGreaterOrEqual, bool $isLess): void
     {
         $moneyA = Money::fromCents($a);
         $moneyB = Money::fromCents($b);
@@ -123,7 +122,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_checks_equality(): void
+    public function itChecksEquality(): void
     {
         $a = Money::fromCents(1000);
         $b = Money::fromCents(1000);
@@ -134,18 +133,18 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_on_different_currencies(): void
+    public function itThrowsOnDifferentCurrencies(): void
     {
         $pln = Money::fromCents(100, 'PLN');
         $eur = Money::fromCents(100, 'EUR');
 
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         $pln->add($eur);
     }
 
     #[Test]
-    public function it_formats_correctly(): void
+    public function itFormatsCorrectly(): void
     {
         $money = Money::fromCents(1599);
 
@@ -154,7 +153,7 @@ final class MoneyTest extends TestCase
     }
 
     #[Test]
-    public function it_handles_rounding_correctly(): void
+    public function itHandlesRoundingCorrectly(): void
     {
         // Test case: 39.99 PLN
         $money = Money::fromDecimal(39.99);
@@ -163,4 +162,3 @@ final class MoneyTest extends TestCase
         self::assertSame('39.99 PLN', $money->format());
     }
 }
-

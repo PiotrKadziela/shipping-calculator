@@ -16,7 +16,7 @@ final readonly class ShippingRuleAppliedEvent extends AbstractDomainEvent
         private string $ruleName,
         private Money $costBefore,
         private Money $costAfter,
-        private string $description
+        private string $description,
     ) {
         parent::__construct();
     }
@@ -51,7 +51,7 @@ final readonly class ShippingRuleAppliedEvent extends AbstractDomainEvent
         if ($this->costAfter->isGreaterThan($this->costBefore)) {
             return $this->costAfter->subtract($this->costBefore);
         }
+
         return $this->costBefore->subtract($this->costAfter);
     }
 }
-

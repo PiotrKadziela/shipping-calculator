@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Shipping\Rule;
 
+use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
-use App\Domain\Entity\Country;
 use App\Domain\Shipping\Rule\HalfPriceShippingRule;
 use App\Domain\Shipping\ShippingCalculationContext;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
+use App\Tests\Support\BaseTestCase;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryHalfPriceShippingConfigRepository;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
-use App\Tests\Support\BaseTestCase;
 
 final class HalfPriceShippingRuleTest extends BaseTestCase
 {
@@ -28,7 +28,7 @@ final class HalfPriceShippingRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_has_correct_name_and_priority(): void
+    public function itHasCorrectNameAndPriority(): void
     {
         self::assertSame('half_price_shipping', $this->rule->getName());
         self::assertSame(305, $this->rule->getPriority());
@@ -36,7 +36,7 @@ final class HalfPriceShippingRuleTest extends BaseTestCase
 
     #[Test]
     #[DataProvider('supportDataProvider')]
-    public function it_supports_only_when_cart_value_meets_threshold(int $cartValueCents, bool $expectedSupport): void
+    public function itSupportsOnlyWhenCartValueMeetsThreshold(int $cartValueCents, bool $expectedSupport): void
     {
         $context = $this->createContext($cartValueCents, $this->usa());
 
@@ -53,7 +53,7 @@ final class HalfPriceShippingRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_grants_50_percent_discount(): void
+    public function itGrants50PercentDiscount(): void
     {
         $context = $this->createContext(50000, $this->usa(), 5000); // 50 PLN base cost
 
@@ -63,7 +63,7 @@ final class HalfPriceShippingRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_grants_50_percent_discount_on_different_cost(): void
+    public function itGrants50PercentDiscountOnDifferentCost(): void
     {
         $context = $this->createContext(45000, $this->usa(), 2000); // 20 PLN base cost
 
@@ -73,7 +73,7 @@ final class HalfPriceShippingRuleTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_records_event(): void
+    public function itRecordsEvent(): void
     {
         $context = $this->createContext(50000, $this->usa(), 5000);
 

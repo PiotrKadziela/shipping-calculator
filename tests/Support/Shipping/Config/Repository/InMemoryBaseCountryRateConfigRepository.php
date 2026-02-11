@@ -24,9 +24,8 @@ final class InMemoryBaseCountryRateConfigRepository implements BaseCountryRateCo
 
     public function __construct(
         private array $baseRates,
-        private Money $defaultRate
-    ) {
-    }
+        private Money $defaultRate,
+    ) {}
 
     public function load(): BaseCountryRateConfig
     {

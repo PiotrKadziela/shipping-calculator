@@ -7,7 +7,6 @@ namespace App\Domain\Entity;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
-use InvalidArgumentException;
 
 /**
  * Aggregate Root representing an order.
@@ -32,7 +31,7 @@ final class Order
         Weight $totalWeight,
         Money $cartValue,
         Country $deliveryCountry,
-        OrderDate $orderDate
+        OrderDate $orderDate,
     ) {
         $this->id = $id;
         $this->products = $products;
@@ -52,10 +51,10 @@ final class Order
         string $id,
         array $products,
         Country $deliveryCountry,
-        OrderDate $orderDate
+        OrderDate $orderDate,
     ): self {
         if (empty($products)) {
-            throw new InvalidArgumentException('Order must contain at least one product');
+            throw new \InvalidArgumentException('Order must contain at least one product');
         }
 
         $totalWeight = Weight::zero();
@@ -63,7 +62,7 @@ final class Order
 
         foreach ($products as $product) {
             if (!$product instanceof Product) {
-                throw new InvalidArgumentException('All items must be Product instances');
+                throw new \InvalidArgumentException('All items must be Product instances');
             }
             $totalWeight = $totalWeight->add($product->totalWeight());
             $cartValue = $cartValue->add($product->totalPrice());
@@ -91,7 +90,7 @@ final class Order
         Weight $totalWeight,
         Money $cartValue,
         Country $deliveryCountry,
-        OrderDate $orderDate
+        OrderDate $orderDate,
     ): self {
         return new self(
             $id,
@@ -145,4 +144,3 @@ final class Order
         );
     }
 }
-

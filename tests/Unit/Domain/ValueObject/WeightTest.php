@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Domain\ValueObject;
 
 use App\Domain\ValueObject\Weight;
-use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -13,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 final class WeightTest extends TestCase
 {
     #[Test]
-    public function it_creates_from_grams(): void
+    public function itCreatesFromGrams(): void
     {
         $weight = Weight::fromGrams(5000);
 
@@ -22,7 +21,7 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_from_kilograms(): void
+    public function itCreatesFromKilograms(): void
     {
         $weight = Weight::fromKilograms(7.2);
 
@@ -31,7 +30,7 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_zero(): void
+    public function itCreatesZero(): void
     {
         $weight = Weight::zero();
 
@@ -39,15 +38,15 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_on_negative_weight(): void
+    public function itThrowsOnNegativeWeight(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
 
         Weight::fromGrams(-100);
     }
 
     #[Test]
-    public function it_calculates_ceiling_kilograms(): void
+    public function itCalculatesCeilingKilograms(): void
     {
         // 7200g = 7.2kg -> ceil = 8kg
         $weight = Weight::fromGrams(7200);
@@ -57,7 +56,7 @@ final class WeightTest extends TestCase
 
     #[Test]
     #[DataProvider('excessKilogramsDataProvider')]
-    public function it_calculates_excess_kilograms_above_limit(int $grams, int $limitGrams, int $expectedExcess): void
+    public function itCalculatesExcessKilogramsAboveLimit(int $grams, int $limitGrams, int $expectedExcess): void
     {
         $weight = Weight::fromGrams($grams);
         $limit = Weight::fromGrams($limitGrams);
@@ -78,7 +77,7 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_compares_weights(): void
+    public function itComparesWeights(): void
     {
         $a = Weight::fromKilograms(5);
         $b = Weight::fromKilograms(3);
@@ -91,7 +90,7 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_adds_weights(): void
+    public function itAddsWeights(): void
     {
         $a = Weight::fromKilograms(2);
         $b = Weight::fromKilograms(3);
@@ -102,7 +101,7 @@ final class WeightTest extends TestCase
     }
 
     #[Test]
-    public function it_formats_correctly(): void
+    public function itFormatsCorrectly(): void
     {
         $light = Weight::fromGrams(500);
         $heavy = Weight::fromKilograms(7.2);
@@ -111,4 +110,3 @@ final class WeightTest extends TestCase
         self::assertSame('7.20 kg', $heavy->format());
     }
 }
-

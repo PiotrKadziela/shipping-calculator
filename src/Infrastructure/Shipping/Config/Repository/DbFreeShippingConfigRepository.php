@@ -4,20 +4,17 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Shipping\Config\Repository;
 
+use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\Shipping\Config\FreeShippingConfig;
 use App\Domain\Shipping\Config\Repository\FreeShippingConfigRepositoryInterface;
-use App\Domain\Repository\CountryRepositoryInterface;
 use App\Domain\ValueObject\Money;
-use PDO;
-use RuntimeException;
 
 final class DbFreeShippingConfigRepository implements FreeShippingConfigRepositoryInterface
 {
     public function __construct(
-        private readonly PDO $pdo,
-        private readonly CountryRepositoryInterface $countryRepository
-    ) {
-    }
+        private readonly \PDO $pdo,
+        private readonly CountryRepositoryInterface $countryRepository,
+    ) {}
 
     public function load(): FreeShippingConfig
     {
@@ -28,7 +25,7 @@ final class DbFreeShippingConfigRepository implements FreeShippingConfigReposito
         $countries = [];
         foreach ($countryRates as $row) {
             $country = $this->countryRepository->findByCode($row['country_code']);
-            if ($country !== null) {
+            if (null !== $country) {
                 $countries[] = $country;
             }
         }
@@ -43,8 +40,8 @@ final class DbFreeShippingConfigRepository implements FreeShippingConfigReposito
 
     /**
      * Load free shipping config for active shipping config.
-        *
-        * @return array<string, mixed>
+     *
+     * @return array<string, mixed>
      */
     private function loadFreeShippingConfig(int $configId): array
     {
@@ -58,7 +55,7 @@ final class DbFreeShippingConfigRepository implements FreeShippingConfigReposito
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('Free shipping configuration not found');
+            throw new \RuntimeException('Free shipping configuration not found');
         }
 
         return $row;
@@ -66,8 +63,8 @@ final class DbFreeShippingConfigRepository implements FreeShippingConfigReposito
 
     /**
      * Load country-specific rates from rule_scopes.
-        *
-        * @return list<array<string, mixed>>
+     *
+     * @return list<array<string, mixed>>
      */
     private function loadCountryRates(int $freeShippingConfigId): array
     {
@@ -95,7 +92,7 @@ final class DbFreeShippingConfigRepository implements FreeShippingConfigReposito
         $row = $stmt->fetch();
 
         if (!$row) {
-            throw new RuntimeException('No active shipping configuration found');
+            throw new \RuntimeException('No active shipping configuration found');
         }
 
         return (int) $row['id'];

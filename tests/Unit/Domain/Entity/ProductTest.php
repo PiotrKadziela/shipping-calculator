@@ -7,13 +7,13 @@ namespace App\Tests\Unit\Domain\Entity;
 use App\Domain\Entity\Product;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\Weight;
-use PHPUnit\Framework\Attributes\Test;
 use App\Tests\Support\BaseTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class ProductTest extends BaseTestCase
 {
     #[Test]
-    public function it_creates_product(): void
+    public function itCreatesProduct(): void
     {
         $product = new Product(
             'p1',
@@ -31,7 +31,7 @@ final class ProductTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_calculates_total_price(): void
+    public function itCalculatesTotalPrice(): void
     {
         $product = new Product(
             'p1',
@@ -45,7 +45,7 @@ final class ProductTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_calculates_total_weight(): void
+    public function itCalculatesTotalWeight(): void
     {
         $product = new Product(
             'p1',
@@ -59,7 +59,7 @@ final class ProductTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_defaults_quantity_to_one(): void
+    public function itDefaultsQuantityToOne(): void
     {
         $product = new Product(
             'p1',
@@ -72,4 +72,3 @@ final class ProductTest extends BaseTestCase
         self::assertSame(250000, $product->totalPrice()->amountInCents());
     }
 }
-

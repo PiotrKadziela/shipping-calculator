@@ -18,10 +18,10 @@ use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
 use App\Tests\Support\BaseTestCase;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryBaseCountryRateConfigRepository;
-use App\Tests\Support\Shipping\Config\Repository\InMemoryWeightSurchargeConfigRepository;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryFreeShippingConfigRepository;
-use App\Tests\Support\Shipping\Config\Repository\InMemoryHalfPriceShippingConfigRepository;
 use App\Tests\Support\Shipping\Config\Repository\InMemoryFridayPromotionConfigRepository;
+use App\Tests\Support\Shipping\Config\Repository\InMemoryHalfPriceShippingConfigRepository;
+use App\Tests\Support\Shipping\Config\Repository\InMemoryWeightSurchargeConfigRepository;
 use PHPUnit\Framework\Attributes\Test;
 
 /**
@@ -50,7 +50,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_basic_order_to_poland(): void
+    public function scenarioBasicOrderToPoland(): void
     {
         // Given: Order to Poland, weight 2kg, value 100 PLN, Monday
         $order = $this->createOrder(
@@ -69,7 +69,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_basic_order_to_germany(): void
+    public function scenarioBasicOrderToGermany(): void
     {
         // Given: Order to Germany, weight 2kg, value 100 PLN, Monday
         $order = $this->createOrder(
@@ -87,7 +87,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_basic_order_to_usa(): void
+    public function scenarioBasicOrderToUsa(): void
     {
         // Given: Order to USA, weight 2kg, value 100 PLN, Monday
         $order = $this->createOrder(
@@ -105,7 +105,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_basic_order_to_france(): void
+    public function scenarioBasicOrderToFrance(): void
     {
         // Given: Order to France, weight 2kg, value 100 PLN, Monday
         $order = $this->createOrder(
@@ -127,7 +127,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_weight_surcharge_7_2_kg(): void
+    public function scenarioWeightSurcharge72Kg(): void
     {
         // Given: 7.2 kg package to Poland (example from requirements)
         $order = $this->createOrder(
@@ -146,7 +146,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_no_weight_surcharge_at_5kg(): void
+    public function scenarioNoWeightSurchargeAt5kg(): void
     {
         // Given: Package exactly 5 kg to Poland
         $order = $this->createOrder(
@@ -165,7 +165,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_weight_surcharge_just_above_limit(): void
+    public function scenarioWeightSurchargeJustAboveLimit(): void
     {
         // Given: Package 5.1 kg to Poland
         $order = $this->createOrder(
@@ -187,7 +187,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_free_shipping_for_high_value_order(): void
+    public function scenarioFreeShippingForHighValueOrder(): void
     {
         // Given: Order to Poland for 500 PLN
         $order = $this->createOrder(
@@ -207,7 +207,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_free_shipping_at_exactly_400_pln(): void
+    public function scenarioFreeShippingAtExactly400Pln(): void
     {
         // Given: Order for exactly 400 PLN
         $order = $this->createOrder(
@@ -225,7 +225,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_no_free_shipping_below_400_pln(): void
+    public function scenarioNoFreeShippingBelow400Pln(): void
     {
         // Given: Order for 399.99 PLN
         $order = $this->createOrder(
@@ -244,7 +244,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_usa_gets_50_percent_instead_of_free(): void
+    public function scenarioUsaGets50PercentInsteadOfFree(): void
     {
         // Given: Order to USA for 500 PLN
         $order = $this->createOrder(
@@ -267,7 +267,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_friday_50_percent_discount(): void
+    public function scenarioFriday50PercentDiscount(): void
     {
         // Given: Order to Poland on Friday
         $order = $this->createOrder(
@@ -286,7 +286,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_friday_no_discount_when_free_shipping(): void
+    public function scenarioFridayNoDiscountWhenFreeShipping(): void
     {
         // Given: Order for 500 PLN on Friday
         $order = $this->createOrder(
@@ -305,7 +305,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_friday_stacks_with_usa_discount(): void
+    public function scenarioFridayStacksWithUsaDiscount(): void
     {
         // Given: Order to USA for 500 PLN on Friday
         $order = $this->createOrder(
@@ -332,7 +332,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_weight_surcharge_and_friday_discount(): void
+    public function scenarioWeightSurchargeAndFridayDiscount(): void
     {
         // Given: Heavy package (7.2 kg) on Friday
         $order = $this->createOrder(
@@ -353,7 +353,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_heavy_order_with_free_shipping(): void
+    public function scenarioHeavyOrderWithFreeShipping(): void
     {
         // Given: Heavy package (7.2 kg) for 500 PLN
         $order = $this->createOrder(
@@ -371,7 +371,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     }
 
     #[Test]
-    public function scenario_usa_heavy_order_on_friday(): void
+    public function scenarioUsaHeavyOrderOnFriday(): void
     {
         // Given: Heavy package (7.2 kg) to USA for 500 PLN on Friday
         $order = $this->createOrder(
@@ -397,7 +397,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
     // ==========================================
 
     #[Test]
-    public function scenario_rules_applied_in_correct_order(): void
+    public function scenarioRulesAppliedInCorrectOrder(): void
     {
         // Given: Order with all possible rules
         $order = $this->createOrder(
@@ -428,7 +428,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
         Country $country,
         float $weightKg,
         float $cartValuePln,
-        string $date
+        string $date,
     ): Order {
         $products = [
             new Product(
@@ -436,7 +436,7 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
                 'Test Product',
                 Money::fromDecimal($cartValuePln),
                 Weight::fromKilograms($weightKg)
-            )
+            ),
         ];
 
         return Order::withExplicitValues(
@@ -449,4 +449,3 @@ final class ShippingCostCalculatorAcceptanceTest extends BaseTestCase
         );
     }
 }
-

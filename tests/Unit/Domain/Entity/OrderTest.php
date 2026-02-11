@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Domain\Entity;
 
-use App\Domain\Entity\Country;
 use App\Domain\Entity\Order;
 use App\Domain\Entity\Product;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
-use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\Test;
 use App\Tests\Support\BaseTestCase;
+use PHPUnit\Framework\Attributes\Test;
 
 final class OrderTest extends BaseTestCase
 {
     #[Test]
-    public function it_creates_order_with_calculated_values(): void
+    public function itCreatesOrderWithCalculatedValues(): void
     {
         // Given
         $products = [
@@ -44,7 +42,7 @@ final class OrderTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_creates_order_with_explicit_values(): void
+    public function itCreatesOrderWithExplicitValues(): void
     {
         // Given
         $products = [new Product('p1', 'Test', Money::fromCents(10000), Weight::fromKilograms(1))];
@@ -65,9 +63,9 @@ final class OrderTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_throws_on_empty_products(): void
+    public function itThrowsOnEmptyProducts(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Order must contain at least one product');
 
         Order::create(
@@ -79,12 +77,12 @@ final class OrderTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_throws_on_invalid_product_type(): void
+    public function itThrowsOnInvalidProductType(): void
     {
-        $this->expectException(InvalidArgumentException::class);
+        $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('All items must be Product instances');
 
-        /** @phpstan-ignore-next-line Testing runtime validation */
+        /* @phpstan-ignore-next-line Testing runtime validation */
         Order::create(
             'order_1',
             ['not a product'],
@@ -94,7 +92,7 @@ final class OrderTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_calculates_product_count_with_quantities(): void
+    public function itCalculatesProductCountWithQuantities(): void
     {
         // Given
         $products = [
@@ -114,5 +112,3 @@ final class OrderTest extends BaseTestCase
         self::assertSame(5, $order->productCount()); // 3 + 2
     }
 }
-
-

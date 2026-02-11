@@ -11,4 +11,3 @@ interface DomainEventInterface
 {
     public function occurredAt(): \DateTimeImmutable;
 }
-

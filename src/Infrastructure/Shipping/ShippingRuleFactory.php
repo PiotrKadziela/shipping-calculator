@@ -9,13 +9,12 @@ use App\Domain\Shipping\Config\Repository\FreeShippingConfigRepositoryInterface;
 use App\Domain\Shipping\Config\Repository\FridayPromotionConfigRepositoryInterface;
 use App\Domain\Shipping\Config\Repository\HalfPriceShippingConfigRepositoryInterface;
 use App\Domain\Shipping\Config\Repository\WeightSurchargeConfigRepositoryInterface;
-use App\Domain\Shipping\ShippingRuleInterface;
 use App\Domain\Shipping\Rule\BaseCountryRateRule;
 use App\Domain\Shipping\Rule\FreeShippingRule;
 use App\Domain\Shipping\Rule\FridayPromotionRule;
 use App\Domain\Shipping\Rule\HalfPriceShippingRule;
 use App\Domain\Shipping\Rule\WeightSurchargeRule;
-use PDO;
+use App\Domain\Shipping\ShippingRuleInterface;
 
 /**
  * Factory for creating shipping rules with priorities loaded from database.
@@ -26,14 +25,13 @@ final class ShippingRuleFactory
     private ?array $priorities = null;
 
     public function __construct(
-        private readonly PDO $pdo,
+        private readonly \PDO $pdo,
         private readonly BaseCountryRateConfigRepositoryInterface $baseCountryRateConfig,
         private readonly WeightSurchargeConfigRepositoryInterface $weightSurchargeConfig,
         private readonly FreeShippingConfigRepositoryInterface $freeShippingConfig,
         private readonly HalfPriceShippingConfigRepositoryInterface $halfPriceShippingConfig,
-        private readonly FridayPromotionConfigRepositoryInterface $fridayPromotionConfig
-    ) {
-    }
+        private readonly FridayPromotionConfigRepositoryInterface $fridayPromotionConfig,
+    ) {}
 
     /**
      * @return ShippingRuleInterface[]
@@ -71,68 +69,50 @@ final class ShippingRuleFactory
      */
     private function loadPriorities(): array
     {
-        if ($this->priorities !== null) {
+        if (null !== $this->priorities) {
             return $this->priorities;
         }
 
-        $priorities = [];
-
-        // Load priorities from each dedicated config table for active shipping config
+        // Load all priorities in single query using UNION
         $configId = $this->getActiveConfigId();
 
-        // Load base_rate priority
         $stmt = $this->pdo->prepare(
-            'SELECT MIN(priority) as priority FROM base_rate_configs WHERE config_id = ? AND is_enabled = 1'
-        );
-        $stmt->execute([$configId]);
-        if ($row = $stmt->fetch()) {
-            $priorities['base_rate'] = (int) ($row['priority'] ?? 100);
-        } else {
-            $priorities['base_rate'] = 100;
-        }
+            <<<SQL
+                SELECT 'base_rate' as rule_type, COALESCE(priority, 100) as priority
+                FROM base_rate_configs
+                WHERE config_id = ? AND is_enabled = 1
 
-        // Load weight_surcharge priority
-        $stmt = $this->pdo->prepare(
-            'SELECT MIN(priority) as priority FROM weight_surcharge_configs WHERE config_id = ? AND is_enabled = 1'
-        );
-        $stmt->execute([$configId]);
-        if ($row = $stmt->fetch()) {
-            $priorities['weight_surcharge'] = (int) ($row['priority'] ?? 200);
-        } else {
-            $priorities['weight_surcharge'] = 200;
-        }
+                UNION
 
-        // Load free_shipping priority
-        $stmt = $this->pdo->prepare(
-            'SELECT MIN(priority) as priority FROM free_shipping_configs WHERE config_id = ? AND is_enabled = 1'
-        );
-        $stmt->execute([$configId]);
-        if ($row = $stmt->fetch()) {
-            $priorities['free_shipping_promo'] = (int) ($row['priority'] ?? 300);
-        } else {
-            $priorities['free_shipping_promo'] = 300;
-        }
+                SELECT 'weight_surcharge' as rule_type, COALESCE(priority, 200) as priority
+                FROM weight_surcharge_configs
+                WHERE config_id = ? AND is_enabled = 1
 
-        // Load half_price_shipping priority
-        $stmt = $this->pdo->prepare(
-            'SELECT MIN(priority) as priority FROM half_price_shipping_configs WHERE config_id = ? AND is_enabled = 1'
-        );
-        $stmt->execute([$configId]);
-        if ($row = $stmt->fetch()) {
-            $priorities['half_price_shipping_promo'] = (int) ($row['priority'] ?? 305);
-        } else {
-            $priorities['half_price_shipping_promo'] = 305;
-        }
+                UNION
 
-        // Load friday_promo priority
-        $stmt = $this->pdo->prepare(
-            'SELECT MIN(priority) as priority FROM friday_promotion_configs WHERE config_id = ? AND is_enabled = 1'
+                SELECT 'free_shipping_promo' as rule_type, COALESCE(priority, 300) as priority
+                FROM free_shipping_configs
+                WHERE config_id = ? AND is_enabled = 1
+
+                UNION
+
+                SELECT 'half_price_shipping_promo' as rule_type, COALESCE(priority, 305) as priority
+                FROM half_price_shipping_configs
+                WHERE config_id = ? AND is_enabled = 1
+
+                UNION
+
+                SELECT 'friday_promo' as rule_type, COALESCE(priority, 400) as priority
+                FROM friday_promotion_configs
+                WHERE config_id = ? AND is_enabled = 1
+                SQL
         );
-        $stmt->execute([$configId]);
-        if ($row = $stmt->fetch()) {
-            $priorities['friday_promo'] = (int) ($row['priority'] ?? 400);
-        } else {
-            $priorities['friday_promo'] = 400;
+
+        $stmt->execute([$configId, $configId, $configId, $configId, $configId]);
+
+        $priorities = [];
+        while ($row = $stmt->fetch()) {
+            $priorities[$row['rule_type']] = (int) $row['priority'];
         }
 
         $this->priorities = $priorities;
@@ -155,4 +135,3 @@ final class ShippingRuleFactory
         return (int) $row['id'];
     }
 }
-

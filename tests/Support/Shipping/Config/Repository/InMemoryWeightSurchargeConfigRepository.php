@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Support\Shipping\Config\Repository;
 
-use App\Domain\Shipping\Config\WeightSurchargeConfig;
 use App\Domain\Shipping\Config\Repository\WeightSurchargeConfigRepositoryInterface;
+use App\Domain\Shipping\Config\WeightSurchargeConfig;
 use App\Domain\ValueObject\Money;
 
 final class InMemoryWeightSurchargeConfigRepository implements WeightSurchargeConfigRepositoryInterface
@@ -17,9 +17,8 @@ final class InMemoryWeightSurchargeConfigRepository implements WeightSurchargeCo
 
     public function __construct(
         private float $limitKg,
-        private Money $surchargePerKg
-    ) {
-    }
+        private Money $surchargePerKg,
+    ) {}
 
     public function load(): WeightSurchargeConfig
     {

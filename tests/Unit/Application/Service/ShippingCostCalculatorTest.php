@@ -10,19 +10,18 @@ use App\Domain\Entity\Product;
 use App\Domain\Event\ShippingCostCalculatedEvent;
 use App\Domain\Event\ShippingRuleAppliedEvent;
 use App\Domain\Shipping\ShippingCalculationContext;
-use App\Domain\Entity\Country;
 use App\Domain\Shipping\ShippingRuleInterface;
 use App\Domain\ValueObject\Money;
 use App\Domain\ValueObject\OrderDate;
 use App\Domain\ValueObject\Weight;
-use PHPUnit\Framework\Attributes\Test;
 use App\Tests\Support\BaseTestCase;
+use PHPUnit\Framework\Attributes\Test;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class ShippingCostCalculatorTest extends BaseTestCase
 {
     #[Test]
-    public function it_applies_rules_in_priority_order(): void
+    public function itAppliesRulesInPriorityOrder(): void
     {
         // Given: Rules with different priorities (provided in the wrong order)
         $lowPriorityRule = $this->createMockRule('low', 300, true, 3000);
@@ -45,7 +44,7 @@ final class ShippingCostCalculatorTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_skips_unsupported_rules(): void
+    public function itSkipsUnsupportedRules(): void
     {
         // Given
         $supportedRule = $this->createMockRule('supported', 100, true, 1000);
@@ -63,7 +62,7 @@ final class ShippingCostCalculatorTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_dispatches_events(): void
+    public function itDispatchesEvents(): void
     {
         // Given
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
@@ -85,11 +84,11 @@ final class ShippingCostCalculatorTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_reports_first_rule_cost(): void
+    public function itReportsFirstRuleCost(): void
     {
         // Given
         $events = [];
-        $dispatcher = new class($events) implements EventDispatcherInterface {
+        $dispatcher = new class ($events) implements EventDispatcherInterface {
             /** @var object[] */
             private array $events;
 
@@ -101,6 +100,7 @@ final class ShippingCostCalculatorTest extends BaseTestCase
             public function dispatch(object $event): object
             {
                 $this->events[] = $event;
+
                 return $event;
             }
         };
@@ -126,7 +126,7 @@ final class ShippingCostCalculatorTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_returns_zero_cost_when_no_rules(): void
+    public function itReturnsZeroCostWhenNoRules(): void
     {
         // Given
         $calculator = new ShippingCostCalculator([]);
@@ -141,7 +141,7 @@ final class ShippingCostCalculatorTest extends BaseTestCase
     }
 
     #[Test]
-    public function it_returns_result_with_all_events(): void
+    public function itReturnsResultWithAllEvents(): void
     {
         // Given
         $rule1 = $this->createMockRule('rule1', 100, true, 1000);
@@ -160,14 +160,13 @@ final class ShippingCostCalculatorTest extends BaseTestCase
 
     private function createMockRule(string $name, int $priority, bool $supports, int $resultCostCents): ShippingRuleInterface
     {
-        return new class($name, $priority, $supports, $resultCostCents) implements ShippingRuleInterface {
+        return new class ($name, $priority, $supports, $resultCostCents) implements ShippingRuleInterface {
             public function __construct(
                 private readonly string $name,
                 private readonly int $priority,
                 private readonly bool $supports,
-                private readonly int $resultCostCents
-            ) {
-            }
+                private readonly int $resultCostCents,
+            ) {}
 
             public function getName(): string
             {
@@ -207,4 +206,3 @@ final class ShippingCostCalculatorTest extends BaseTestCase
         );
     }
 }
-
